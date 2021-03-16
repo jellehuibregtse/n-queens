@@ -21,11 +21,10 @@ import java.util.Arrays;
  * @author Jelle Huibregtse
  */
 public class NQueens {
+    private final ArrayList<int[][]> solutions = new ArrayList<>();
     private int N = 8;
     private int amountOfSolutions;
-
-    private final ArrayList<int[][]> solutions = new ArrayList<>();
-    private int[][] board = generateEmptyBoard();
+    private int[][] board = generateEmptyBoard(N);
 
     // Driver code.
     public static void main(String[] args) {
@@ -45,6 +44,7 @@ public class NQueens {
 
     public void setN(int n) {
         N = n;
+        board = generateEmptyBoard(n);
     }
 
     public int[][] getBoard() {
@@ -55,15 +55,23 @@ public class NQueens {
         this.board = board;
     }
 
+    public int getAmountOfSolutions() {
+        return amountOfSolutions;
+    }
+
+    public ArrayList<int[][]> getSolutions() {
+        return solutions;
+    }
+
     /**
      * A utility function to create an empty board.
      *
      * @return an 2D integer array of the board.
      */
-    int[][] generateEmptyBoard() {
-        int[][] board = new int[N][N];
+    int[][] generateEmptyBoard(int n) {
+        int[][] board = new int[n][n];
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < n; i++) {
             Arrays.fill(board[i], 0);
         }
 
