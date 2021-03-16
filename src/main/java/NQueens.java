@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -20,16 +21,49 @@ import java.util.Arrays;
  * @author Jelle Huibregtse
  */
 public class NQueens {
+    private int N = 8;
+    private int amountOfSolutions;
+
+    private final ArrayList<int[][]> solutions = new ArrayList<>();
+    private int[][] board = generateEmptyBoard();
+
+    // Driver code.
+    public static void main(String[] args) {
+        NQueens nQueens = new NQueens();
+        nQueens.solve();
+
+        System.out.println(nQueens.solutions.size());
+
+        if (nQueens.amountOfSolutions > 0) {
+            nQueens.prettyPrintBoard(nQueens.solutions.get(0));
+        }
+    }
+
+    public int getN() {
+        return N;
+    }
+
+    public void setN(int n) {
+        N = n;
+    }
+
+    public int[][] getBoard() {
+        return board;
+    }
+
+    public void setBoard(int[][] board) {
+        this.board = board;
+    }
+
     /**
      * A utility function to create an empty board.
      *
-     * @param n the size of the board.
      * @return an 2D integer array of the board.
      */
-    int[][] generateEmptyBoard(int n) {
-        int[][] board = new int[n][n];
+    int[][] generateEmptyBoard() {
+        int[][] board = new int[N][N];
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < N; i++) {
             Arrays.fill(board[i], 0);
         }
 
@@ -43,7 +77,7 @@ public class NQueens {
      */
     void printBoard(int[][] board) {
         for (int[] values : board) {
-            for (int j = 0; j < board.length; j++) {
+            for (int j = 0; j < N; j++) {
                 System.out.print(" " + values[j] + " ");
             }
             System.out.println();
@@ -58,21 +92,21 @@ public class NQueens {
     void prettyPrintBoard(int[][] board) {
         char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
         System.out.print("  ");
-        for (int i = 0; i < board.length + 1; i++) {
-            System.out.print(i == board.length ? "--\n" : "---");
+        for (int i = 0; i < N + 1; i++) {
+            System.out.print(i == N ? "--\n" : "---");
         }
-        for (int i = 0; i < board.length; i++) {
-            System.out.print(board.length - i + " |");
-            for (int j = 0; j < board.length; j++) {
+        for (int i = 0; i < N; i++) {
+            System.out.print(N - i + " |");
+            for (int j = 0; j < N; j++) {
                 System.out.print(" " + board[i][j] + " ");
             }
             System.out.println("|");
         }
         System.out.print("  ");
-        for (int i = 0; i < board.length + 1; i++) {
-            System.out.print(i == board.length ? "--\n" : "---");
+        for (int i = 0; i < N + 1; i++) {
+            System.out.print(i == N ? "--\n" : "---");
         }
-        for (int i = 0; i < board.length; i++) {
+        for (int i = 0; i < N; i++) {
             System.out.print(i == 0 ? "\t" + alphabet[0] + " " : " " + alphabet[i] + " ");
         }
     }
@@ -103,7 +137,7 @@ public class NQueens {
             }
         }
         // Check lower left diagonal.
-        for (int i = row, j = column; i < board.length && j >= 0; i++, j--) {
+        for (int i = row, j = column; i < N && j >= 0; i++, j--) {
             if (board[i][j] == 1) {
                 return false;
             }
@@ -112,55 +146,49 @@ public class NQueens {
         return true;
     }
 
-    /**
-     * Overloaded method of solve, initialising the solve at column 0.
-     *
-     * @param board an 2D integer array of the board.
-     */
-    void solve(int[][] board) {
-        solve(board, 0);
+    void solve() {
+        solve(0);
     }
 
     /**
      * The solve function implementing the algorithm.
      *
-     * @param board  an 2D integer array of the board.
      * @param column the current column being addressed.
      * @return true if placing was successful, moving to the parent call or out of the function, when a full solution has been reached.
      */
-    boolean solve(int[][] board, int column) {
+    boolean solve(int column) {
         // The base case: all queens have been placed.
-        if (column >= board.length) {
+        if (column >= N) {
+            amountOfSolutions++;
+
+            int[][] solution = new int[N][N];
+
+            for (int i = 0; i < N; i++) {
+                System.arraycopy(board[i], 0, solution[i], 0, N);
+            }
+
+            solutions.add(solution);
+
             return true;
         }
 
+        boolean result = false;
+
         // For the current column, consider all rows.
-        for (int i = 0; i < board.length; i++) {
+        for (int i = 0; i < N; i++) {
             // Check to see if it is safe to place a queen at row i.
             if (isSafe(board, i, column)) {
                 // We know it's safe, we can place a queen.
                 board[i][column] = 1;
 
                 // Recursively do this for the rest of the columns, until the base case is reached.
-                if (solve(board, column + 1)) {
-                    return true;
-                }
+                result = solve(column + 1) || result;
 
                 // If we reach this code, we know that placing a queen here didn't work, so we backtrack.
                 board[i][column] = 0;
             }
         }
 
-        return false;
-    }
-
-    // Driver code.
-    public static void main(String[] args) {
-        NQueens nQueens = new NQueens();
-
-        var board = nQueens.generateEmptyBoard(8);
-        nQueens.solve(board);
-
-        nQueens.prettyPrintBoard(board);
+        return result;
     }
 }

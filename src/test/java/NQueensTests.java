@@ -11,7 +11,7 @@ public class NQueensTests {
     public void setup() {
         nQueens = new NQueens();
 
-        emptyBoard = nQueens.generateEmptyBoard(8);
+        emptyBoard = nQueens.generateEmptyBoard();
     }
 
     @Test
