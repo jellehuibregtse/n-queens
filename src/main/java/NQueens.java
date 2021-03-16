@@ -162,7 +162,5 @@ public class NQueens {
         nQueens.solve(board);
 
         nQueens.prettyPrintBoard(board);
-
-        nQueens = new NQueens();
     }
 }
