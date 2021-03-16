@@ -18,4 +18,4 @@ jobs:
       with:
         java-version: 1.14
     - name: Build and test with Maven
-      run: mvn test
+      run: mvn -B verify
