@@ -125,7 +125,7 @@ public class NQueens {
      * Note: we only have to check the left side for attacking queens.
      * Since we are placing queens from left to right.
      *
-     * @param board  an 2D integer array of the board.
+     * @param board  a 2D integer array of the board.
      * @param row    where the queen wants to be placed.
      * @param column where the queen wants to be placed.
      * @return true if it's a valid placement.
