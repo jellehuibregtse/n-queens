@@ -153,6 +153,13 @@ This does the exact same as the previous example.
 
 Our code can be found [here](https://github.com/jellehuibregtse/n-queens).
 
+## Conclusion
+
+All in all, clearly Java is more suitable for object-oriented programming. Since, Java 8, strides have been made to make
+Java more functional programming friendly, but fundamentally it will probably never be. Since, there are no true
+function types in Java and types are inherently mutable. Java benefits most from a combination of object-oriented
+programming with some functional programming.
+
 ## Sources
 
 - https://www.baeldung.com/cs/functional-programming
