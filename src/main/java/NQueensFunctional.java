@@ -27,23 +27,7 @@ public class NQueensFunctional {
      *
      * @author Jelle Huibregtse
      */
-    public static class Position {
-        private final int x;
-        private final int y;
-
-        public Position(final int x, final int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
+    public static record Position(int x, int y) {
         @Override
         public String toString() {
             return String.format("(%d, %d)", this.x, this.y);
@@ -53,25 +37,9 @@ public class NQueensFunctional {
     /**
      * A class take keeps track of position and state of a tile.
      *
-     * @author Aron Hemmes
+     * @author Aron Hemmes, Jelle Huibregtse
      */
-    public static class Tile {
-        private final Position position;
-        private final int state;
-
-        public Tile(final Position position, final int state) {
-            this.position = position;
-            this.state = state;
-        }
-
-        public Position getPosition() {
-            return position;
-        }
-
-        public int getState() {
-            return state;
-        }
-
+    public static record Tile(Position position, int state) {
         @Override
         public String toString() {
             return String.valueOf(state);
@@ -119,7 +87,7 @@ public class NQueensFunctional {
          */
         public Tile getTileByPos(final int x, final int y) {
             return Arrays.stream(tiles)
-                    .filter(i -> i.getPosition().getX() == x && i.getPosition().getY() == y)
+                    .filter(i -> i.position().x() == x && i.position().y() == y)
                     .findFirst()
                     .orElseThrow(NullPointerException::new);
         }
@@ -135,7 +103,7 @@ public class NQueensFunctional {
             return IntStream.range(0, length()).noneMatch(i ->
                     IntStream.range(0, length()).anyMatch(j ->
                             // Check if there's a queen on (i, j), if so check if it's on the same axis or diagonal of (x, y).
-                            getTileByPos(i, j).getState() == 1 && (i == x || j == y || Math.abs(j - y) == Math.abs(i - x))
+                            getTileByPos(i, j).state() == 1 && (i == x || j == y || Math.abs(j - y) == Math.abs(i - x))
                     )
             );
         }
@@ -149,15 +117,15 @@ public class NQueensFunctional {
          * @return new board with changed value
          */
         public Board copyWithChangedValueOnCoordinate(int x, int y, int state) {
-            return new Board(Arrays.stream(getTiles()).map(t -> t.getPosition().getX() == x && t.getPosition().getY() == y ? new Tile(new Position(x, y), state) : t).toArray(Tile[]::new));
+            return new Board(Arrays.stream(getTiles()).map(t -> t.position().x() == x && t.position().y() == y ? new Tile(new Position(x, y), state) : t).toArray(Tile[]::new));
         }
 
         @Override
         public String toString() {
             return "  -" + IntStream.range(0, length()).mapToObj(i -> "---").collect(Collectors.joining("")) + "-\n" +
-                    IntStream.range(0, length()).mapToObj(i -> Math.abs(i - length()) + " | " + IntStream.range(0, length()).mapToObj(j -> tiles[j + i * length()].toString()).collect(Collectors.joining("  ")) + " |\n").collect(Collectors.joining("")) +
-                    "  -" + IntStream.range(0, length()).mapToObj(i -> "---").collect(Collectors.joining("")) + "-\n" +
-                    "    " + IntStream.range(0, length()).mapToObj(i -> String.valueOf("abcdefghijklmnopqrstuvwxyz".toCharArray()[i])).collect(Collectors.joining("  "));
+                   IntStream.range(0, length()).mapToObj(i -> Math.abs(i - length()) + " | " + IntStream.range(0, length()).mapToObj(j -> tiles[j + i * length()].toString()).collect(Collectors.joining("  ")) + " |\n").collect(Collectors.joining("")) +
+                   "  -" + IntStream.range(0, length()).mapToObj(i -> "---").collect(Collectors.joining("")) + "-\n" +
+                   "    " + IntStream.range(0, length()).mapToObj(i -> String.valueOf("abcdefghijklmnopqrstuvwxyz".toCharArray()[i])).collect(Collectors.joining("  "));
         }
     }
 
