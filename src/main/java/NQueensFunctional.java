@@ -57,7 +57,7 @@ public class NQueensFunctional {
      */
     public static class Tile {
         private final Position position;
-        private int state;
+        private final int state;
 
         public Tile(final Position position, final int state) {
             this.position = position;
@@ -72,13 +72,9 @@ public class NQueensFunctional {
             return state;
         }
 
-        public void setState(int state) {
-            this.state = state;
-        }
-
         @Override
         public String toString() {
-            return String.format("%d", this.state);
+            return String.valueOf(state);
         }
     }
 
@@ -102,14 +98,16 @@ public class NQueensFunctional {
         public Board(final int size) {
             this.tiles =
                     IntStream.range(0, size * size)
-                            .mapToObj(pos -> {
-                                return new Tile(new Position(pos % size, (int) Math.floor((double) pos / size)), 0);
-                            })
+                            .mapToObj(pos -> new Tile(new Position(pos % size, (int) Math.floor((double) pos / size)), 0))
                             .toArray(Tile[]::new);
         }
 
         public int length() {
             return (int) Math.sqrt(tiles.length);
+        }
+
+        public Tile[] getTiles() {
+            return tiles;
         }
 
         /**
@@ -142,8 +140,24 @@ public class NQueensFunctional {
             );
         }
 
-        public Tile[] getTiles() {
-            return tiles;
+        /**
+         * A function to return a copy of this board with a changed value on coordinate (x, y)
+         *
+         * @param x     coordinate
+         * @param y     coordinate
+         * @param state of tile
+         * @return new board with changed value
+         */
+        public Board copyWithChangedValueOnCoordinate(int x, int y, int state) {
+            return new Board(Arrays.stream(getTiles()).map(t -> t.getPosition().getX() == x && t.getPosition().getY() == y ? new Tile(new Position(x, y), state) : t).toArray(Tile[]::new));
+        }
+
+        @Override
+        public String toString() {
+            return "  -" + IntStream.range(0, length()).mapToObj(i -> "---").collect(Collectors.joining("")) + "-\n" +
+                    IntStream.range(0, length()).mapToObj(i -> Math.abs(i - length()) + " | " + IntStream.range(0, length()).mapToObj(j -> tiles[j + i * length()].toString()).collect(Collectors.joining("  ")) + " |\n").collect(Collectors.joining("")) +
+                    "  -" + IntStream.range(0, length()).mapToObj(i -> "---").collect(Collectors.joining("")) + "-\n" +
+                    "    " + IntStream.range(0, length()).mapToObj(i -> String.valueOf("abcdefghijklmnopqrstuvwxyz".toCharArray()[i])).collect(Collectors.joining("  "));
         }
     }
 
@@ -151,7 +165,8 @@ public class NQueensFunctional {
     public static void main(String[] args) {
         NQueensFunctional nQueensFunctional = new NQueensFunctional();
         List<Board> solutions = nQueensFunctional.solve(new Board(8), 8, 0);
-        System.out.println(solutions.size());
+        System.out.println("There are " + solutions.size() + " solutions.");
+        System.out.println(solutions.get(0).toString());
     }
 
     /**
@@ -173,7 +188,7 @@ public class NQueensFunctional {
                                         // Recursively do this for the rest of the columns, until the base case is reached.
                                         solve(
                                                 // Copy board to a new board and add queen on (i, column).
-                                                new Board(Arrays.stream(board.getTiles()).map(t -> t.getPosition().getX() == i && t.getPosition().getY() == column ? new Tile(new Position(i, column), 1) : t).toArray(Tile[]::new)), n, column + 1) :
+                                                board.copyWithChangedValueOnCoordinate(i, column, 1), n, column + 1) :
                                         // If we reach this code, we know that placing a queen here didn't work, so we return nothing and backtrack.
                                         new ArrayList<Board>()
                         // Collect every board to one list.

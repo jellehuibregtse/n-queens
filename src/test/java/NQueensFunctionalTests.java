@@ -31,37 +31,37 @@ public class NQueensFunctionalTests {
 
     @Test
     public void isSafe_QueenOnOffAngle() {
-        emptyBoard.getTileByPos(1, 2).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(1, 2, 1);
         Assertions.assertTrue(emptyBoard.isSafe(0, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameXY() {
-        emptyBoard.getTileByPos(0, 0).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(0, 0, 1);
         Assertions.assertFalse(emptyBoard.isSafe(0, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameXAngle() {
-        emptyBoard.getTileByPos(0, 0).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(0, 0, 1);
         Assertions.assertFalse(emptyBoard.isSafe(3, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameYAngle() {
-        emptyBoard.getTileByPos(0, 0).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(0, 0, 1);
         Assertions.assertFalse(emptyBoard.isSafe(0, 3));
     }
 
     @Test
     public void isNotSafe_QueenOnSameUpLeftDiagonal() {
-        emptyBoard.getTileByPos(0, 0).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(0, 0, 1);
         Assertions.assertFalse(emptyBoard.isSafe(3, 3));
     }
 
     @Test
     public void isNotSafe_QueenOnSameDownLeftDiagonal() {
-        emptyBoard.getTileByPos(0, 0).setState(1);
+        emptyBoard = emptyBoard.copyWithChangedValueOnCoordinate(0, 0, 1);
         Assertions.assertFalse(emptyBoard.isSafe(3, 0));
     }
 
