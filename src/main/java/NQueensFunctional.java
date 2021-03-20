@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -56,7 +59,7 @@ public class NQueensFunctional {
         private final Position position;
         private int state;
 
-        public Tile(final Position position, int state) {
+        public Tile(final Position position, final int state) {
             this.position = position;
             this.state = state;
         }
@@ -80,7 +83,7 @@ public class NQueensFunctional {
     }
 
     /**
-     * A class that stores tiles and has all functionality of the board
+     * A class that stores tiles and has all functionality of the board.
      *
      * @author Aron Hemmes
      */
@@ -96,10 +99,12 @@ public class NQueensFunctional {
          *
          * @param size of board
          */
-        public Board(int size) {
+        public Board(final int size) {
             this.tiles =
-                    IntStream.range(0, size*size)
-                            .mapToObj(pos -> new Tile(new Position(pos % size, (int) Math.floor(pos / size)), 0))
+                    IntStream.range(0, size * size)
+                            .mapToObj(pos -> {
+                                return new Tile(new Position(pos % size, (int) Math.floor((double) pos / size)), 0);
+                            })
                             .toArray(Tile[]::new);
         }
 
@@ -110,11 +115,11 @@ public class NQueensFunctional {
         /**
          * A function to get a tile by position.
          *
-         * @param x coordinate
-         * @param y coordinate
-         * @return tile with position and state
+         * @param x coordinate.
+         * @param y coordinate.
+         * @return tile with position and state.
          */
-        public Tile getTileByPos(int x, int y) {
+        public Tile getTileByPos(final int x, final int y) {
             return Arrays.stream(tiles)
                     .filter(i -> i.getPosition().getX() == x && i.getPosition().getY() == y)
                     .findFirst()
@@ -124,14 +129,14 @@ public class NQueensFunctional {
         /**
          * A function to check if a queen can be placed at board[row][column].
          *
-         * @param x on row where the queen needs to be placed
-         * @param y on column where the queen needs to be placed
-         * @return true if a queen can be placed on x, y
+         * @param x on row where the queen needs to be placed.
+         * @param y on column where the queen needs to be placed.
+         * @return true if a queen can be placed on x, y.
          */
-        public boolean isSafe(int x, int y) {
+        public boolean isSafe(final int x, final int y) {
             return IntStream.range(0, length()).noneMatch(i ->
                     IntStream.range(0, length()).anyMatch(j ->
-                            // check if there's a queen on (i, j), if so check if it's on the same axis or diagonal of (x, y)
+                            // Check if there's a queen on (i, j), if so check if it's on the same axis or diagonal of (x, y).
                             getTileByPos(i, j).getState() == 1 && (i == x || j == y || Math.abs(j - y) == Math.abs(i - x))
                     )
             );
@@ -152,27 +157,26 @@ public class NQueensFunctional {
     /**
      * The solve function implementing the algorithm.
      *
-     * @author Aron Hemmes
-     * @param board 2d array of row and column
-     * @param n amount of queens
-     * @param column iterate between columns
-     * @return a list of all the solutions
+     * @param board  2d array of row and column.
+     * @param n      amount of queens.
+     * @param column iterate between columns.
+     * @return a list of all the solutions.
      */
     List<Board> solve(Board board, int n, int column) {
-        return column >= n?
-            // The base case: all queens have been placed.
-            new ArrayList<>(Collections.singleton(board)) :
-            // For the current column, consider all rows.
-            IntStream.range(0, n).mapToObj(i ->
-                // Check to see if it is safe to place a queen at row i.
-                board.isSafe(i, column)?
-                    // Recursively do this for the rest of the columns, until the base case is reached.
-                    solve(
-                        // copy board to a new board and add queen on (i, column)
-                        new Board(Arrays.stream(board.getTiles()).map(t -> t.getPosition().getX() == i && t.getPosition().getY() == column? new Tile(new Position(i, column), 1) : t).toArray(Tile[]::new)), n, column + 1) :
-                    // If we reach this code, we know that placing a queen here didn't work, so we return nothing and backtrack.
-                    new ArrayList<Board>()
-            // collect every board to one list
-            ).collect(Collectors.toList()).stream().flatMap(List::stream).collect(Collectors.toList());
+        return column >= n ?
+                // The base case: all queens have been placed.
+                new ArrayList<>(Collections.singleton(board)) :
+                // For the current column, consider all rows.
+                IntStream.range(0, n).mapToObj(i ->
+                                // Check to see if it is safe to place a queen at row i.
+                                board.isSafe(i, column) ?
+                                        // Recursively do this for the rest of the columns, until the base case is reached.
+                                        solve(
+                                                // Copy board to a new board and add queen on (i, column).
+                                                new Board(Arrays.stream(board.getTiles()).map(t -> t.getPosition().getX() == i && t.getPosition().getY() == column ? new Tile(new Position(i, column), 1) : t).toArray(Tile[]::new)), n, column + 1) :
+                                        // If we reach this code, we know that placing a queen here didn't work, so we return nothing and backtrack.
+                                        new ArrayList<Board>()
+                        // Collect every board to one list.
+                ).collect(Collectors.toList()).stream().flatMap(List::stream).collect(Collectors.toList());
     }
 }
