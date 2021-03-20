@@ -1,9 +1,6 @@
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.*;
 
 /**
  * N Queens Problem – Functional
@@ -23,17 +20,25 @@ import static java.util.stream.Collectors.*;
 public class NQueensFunctional {
 
     /**
-     * A class to keep track of an (x, y) or position.
+     * A class to keep track of an (x, y) position.
      *
      * @author Jelle Huibregtse
      */
     public static class Position {
-        public final int x;
-        public final int y;
+        private final int x;
+        private final int y;
 
         public Position(final int x, final int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
         }
 
         @Override
@@ -42,67 +47,132 @@ public class NQueensFunctional {
         }
     }
 
+    /**
+     * A class take keeps track of position and state of a tile.
+     *
+     * @author Aron Hemmes
+     */
+    public static class Tile {
+        private final Position position;
+        private int state;
+
+        public Tile(final Position position, int state) {
+            this.position = position;
+            this.state = state;
+        }
+
+        public Position getPosition() {
+            return position;
+        }
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d", this.state);
+        }
+    }
+
+    /**
+     * A class that stores tiles and has all functionality of the board
+     *
+     * @author Aron Hemmes
+     */
+    public static class Board {
+        private final Tile[] tiles;
+
+        public Board(Tile[] tiles) {
+            this.tiles = tiles;
+        }
+
+        /**
+         * A constructor that generates an empty board.
+         *
+         * @param size of board
+         */
+        public Board(int size) {
+            this.tiles =
+                    IntStream.range(0, size*size)
+                            .mapToObj(pos -> new Tile(new Position(pos % size, (int) Math.floor(pos / size)), 0))
+                            .toArray(Tile[]::new);
+        }
+
+        public int length() {
+            return (int) Math.sqrt(tiles.length);
+        }
+
+        /**
+         * A function to get a tile by position.
+         *
+         * @param x coordinate
+         * @param y coordinate
+         * @return tile with position and state
+         */
+        public Tile getTileByPos(int x, int y) {
+            return Arrays.stream(tiles)
+                    .filter(i -> i.getPosition().getX() == x && i.getPosition().getY() == y)
+                    .findFirst()
+                    .orElseThrow(NullPointerException::new);
+        }
+
+        /**
+         * A function to check if a queen can be placed at board[row][column].
+         *
+         * @param x on row where the queen needs to be placed
+         * @param y on column where the queen needs to be placed
+         * @return true if a queen can be placed on x, y
+         */
+        public boolean isSafe(int x, int y) {
+            return IntStream.range(0, length()).noneMatch(i ->
+                    IntStream.range(0, length()).anyMatch(j ->
+                            // check if there's a queen on (i, j), if so check if it's on the same axis or diagonal of (x, y)
+                            getTileByPos(i, j).getState() == 1 && (i == x || j == y || Math.abs(j - y) == Math.abs(i - x))
+                    )
+            );
+        }
+
+        public Tile[] getTiles() {
+            return tiles;
+        }
+    }
+
     // Driver code.
     public static void main(String[] args) {
         NQueensFunctional nQueensFunctional = new NQueensFunctional();
-        List<int[][]> solutions = nQueensFunctional.solve(nQueensFunctional.generateEmptyBoard(8), 8, 0);
+        List<Board> solutions = nQueensFunctional.solve(new Board(8), 8, 0);
         System.out.println(solutions.size());
-        if(solutions.size() > 0) {
-            NQueens nQueens = new NQueens();
-            nQueens.prettyPrintBoard(solutions.get(0));
-        }
     }
 
     /**
      * The solve function implementing the algorithm.
      *
+     * @author Aron Hemmes
      * @param board 2d array of row and column
      * @param n amount of queens
      * @param column iterate between columns
      * @return a list of all the solutions
      */
-    List<int[][]> solve(int[][] board, int n, int column) {
+    List<Board> solve(Board board, int n, int column) {
         return column >= n?
             // The base case: all queens have been placed.
-            new ArrayList<>(Collections.singleton(IntStream.range(0, n).mapToObj(i -> board[i].clone()).toArray(int[][]::new))) :
+            new ArrayList<>(Collections.singleton(board)) :
             // For the current column, consider all rows.
             IntStream.range(0, n).mapToObj(i ->
                 // Check to see if it is safe to place a queen at row i.
-                isSafe(board, i, column)?
+                board.isSafe(i, column)?
                     // Recursively do this for the rest of the columns, until the base case is reached.
                     solve(
                         // copy board to a new board and add queen on (i, column)
-                        IntStream.range(0, n).mapToObj(j -> IntStream.range(0, n).map(k -> j == i && k == column? 1 : board[j][k]).toArray()).toArray(int[][]::new), n, column + 1) :
+                        new Board(Arrays.stream(board.getTiles()).map(t -> t.getPosition().getX() == i && t.getPosition().getY() == column? new Tile(new Position(i, column), 1) : t).toArray(Tile[]::new)), n, column + 1) :
                     // If we reach this code, we know that placing a queen here didn't work, so we return nothing and backtrack.
-                    new ArrayList<int[][]>()
+                    new ArrayList<Board>()
             // collect every board to one list
             ).collect(Collectors.toList()).stream().flatMap(List::stream).collect(Collectors.toList());
-    }
-
-    /**
-     * A function to check if a queen can be placed at board[row][column].
-     *
-     * @param board 2d array of row and column
-     * @param x on row where the queen needs to be placed
-     * @param y on column where the queen needs to be placed
-     * @return true if a queen can be placed on x, y
-     */
-    boolean isSafe(int[][] board, int x, int y) {
-        return IntStream.range(0, board.length).noneMatch(i ->
-            IntStream.range(0, board[i].length).anyMatch(j ->
-                // check if there's a queen on (i, j), if so check if it's on the same axis or diagonal of (x, y)
-                board[i][j] == 1 && (i == x || j == y || Math.abs(j - y) == Math.abs(i - x))
-            )
-        );
-    }
-
-    /**
-     * A function to generate an empty board
-     *
-     * @param n size of the board
-     * @return a 2D array (row, column) of the board, starting values are 0
-     */
-    int[][] generateEmptyBoard(int n) {
-        return new int[n][n];
     }
 }

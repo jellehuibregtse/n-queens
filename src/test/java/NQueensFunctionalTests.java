@@ -11,64 +11,64 @@ import java.util.stream.Stream;
 public class NQueensFunctionalTests {
 
     private NQueensFunctional nQueensFunctional;
-    private int[][] emptyBoard;
+    private NQueensFunctional.Board emptyBoard;
 
     @BeforeEach
     public void setup() {
         nQueensFunctional = new NQueensFunctional();
 
-        emptyBoard = nQueensFunctional.generateEmptyBoard(8);
+        emptyBoard = new NQueensFunctional.Board(8);
     }
 
     @Test
     public void isSafe_Empty_Board() {
-        for (int i = 0; i < emptyBoard.length; i++) {
-            for (int j = 0; j < emptyBoard.length; j++) {
-                Assertions.assertTrue(nQueensFunctional.isSafe(emptyBoard, i, j));
+        for (int i = 0; i < emptyBoard.length(); i++) {
+            for (int j = 0; j < emptyBoard.length(); j++) {
+                Assertions.assertTrue(emptyBoard.isSafe(i, j));
             }
         }
     }
 
     @Test
     public void isSafe_QueenOnOffAngle() {
-        emptyBoard[1][2] = 1;
-        Assertions.assertTrue(nQueensFunctional.isSafe(emptyBoard, 0, 0));
+        emptyBoard.getTileByPos(1, 2).setState(1);
+        Assertions.assertTrue(emptyBoard.isSafe(0, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameXY() {
-        emptyBoard[0][0] = 1;
-        Assertions.assertFalse(nQueensFunctional.isSafe(emptyBoard, 0, 0));
+        emptyBoard.getTileByPos(0, 0).setState(1);
+        Assertions.assertFalse(emptyBoard.isSafe(0, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameXAngle() {
-        emptyBoard[0][0] = 1;
-        Assertions.assertFalse(nQueensFunctional.isSafe(emptyBoard, 3, 0));
+        emptyBoard.getTileByPos(0, 0).setState(1);
+        Assertions.assertFalse(emptyBoard.isSafe(3, 0));
     }
 
     @Test
     public void isNotSafe_QueenOnSameYAngle() {
-        emptyBoard[0][0] = 1;
-        Assertions.assertFalse(nQueensFunctional.isSafe(emptyBoard, 0, 3));
+        emptyBoard.getTileByPos(0, 0).setState(1);
+        Assertions.assertFalse(emptyBoard.isSafe(0, 3));
     }
 
     @Test
     public void isNotSafe_QueenOnSameUpLeftDiagonal() {
-        emptyBoard[0][0] = 1;
-        Assertions.assertFalse(nQueensFunctional.isSafe(emptyBoard, 3, 3));
+        emptyBoard.getTileByPos(0, 0).setState(1);
+        Assertions.assertFalse(emptyBoard.isSafe(3, 3));
     }
 
     @Test
     public void isNotSafe_QueenOnSameDownLeftDiagonal() {
-        emptyBoard[0][3] = 1;
-        Assertions.assertFalse(nQueensFunctional.isSafe(emptyBoard, 3, 0));
+        emptyBoard.getTileByPos(0, 0).setState(1);
+        Assertions.assertFalse(emptyBoard.isSafe(3, 0));
     }
 
     @ParameterizedTest
     @MethodSource("solutionsSet")
     public void amountOfSolutions(int n, int amountOfSolutions) {
-        List<int[][]> solutions = nQueensFunctional.solve(nQueensFunctional.generateEmptyBoard(n), n, 0);
+        List<NQueensFunctional.Board> solutions = nQueensFunctional.solve(new NQueensFunctional.Board(n), n, 0);
         Assertions.assertEquals(amountOfSolutions, solutions.size());
     }
 
