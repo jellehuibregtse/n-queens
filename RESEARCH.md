@@ -1,6 +1,6 @@
 # Research Assignment: FP in the wild
 
-For this research assignment we choose a programming language, and we take a look at how functional this language. We
+For this research assignment we choose a programming language, and we take a look at how functional this language is. We
 chose to take a look at Java. For this research we will use
 the [DOT framework](http://ictresearchmethods.nl/The_DOT_Framework). We also formulate a general research question: Is
 programming in a functional manner possible in Java and to what extent? This is quite a large question, so we will
