@@ -1,4 +1,11 @@
-# Research Assignment: FP in the wild
+<p align="center">
+  <h1 align="center">Functional Programming in the Wild</h1>
+  <h4 align="center">
+  <strong>Jelle Huibregtse and Aron Hemmes</strong>
+  </h4>
+</p>
+
+## Research description
 
 For this research assignment we choose a programming language, and we take a look at how functional this language is. We
 chose to take a look at Java. For this research we will use
@@ -57,6 +64,14 @@ result. Furthermore, **immutability** is an important term when talking about fu
 immutable when it cannot be changed after its creation. So, no methods that allow changing state or exposing mutable
 fields. The reason and benefits of this are: thread-safety, ensured, valid and constant state, and it avoids unwanted
 reference modifications.
+
+Finally, let's talk about some functional programming techniques. First, we have **function composition**, it refers to
+composing complex functions from simpler (and often smaller) functions. If we have function `f: a -> b` and `g: b -> c`,
+then we can compose a new function `h: a -> c`. This is function composition. Second, we have **currying**, which is a
+mathematical technique of converting a function that takes multiple arguments into a sequence of functions that take a
+single argument. Last, we have a powerful technique called **recursion**, this allows us to break down a problem into
+smaller pieces. Furthermore, it's used to implement mathematical functions (such as the Fibonacci sequence) directly.
+Moreover, it can be used for algorithm techniques such as backtracking.
 
 To conclude, when talking about functional programming rules, we have to adhere to the following: functions are
 first-class citizens, referential transparency and lack of side effects, higher-order functions and immutability.
@@ -148,6 +163,66 @@ public record Person (String name, int age) {}
 ```
 
 This does the exact same as the previous example.
+
+We now take a look at the `Function` interface in Java. We can create two functions `abs` and `sqrt` like this:
+
+```java
+class Main {
+    Function<Double, Double> abs = x -> x < 0 ? -x : x;
+    Function<Double, Double> sqrt = Math::sqrt;
+}
+```
+
+We can even use function composition to create the composite of `abs` and `sqrt` like this:
+
+```java
+class Main {
+    Function<Double, Double> absThenSqrt = sqrt.compose(abs);
+}
+```
+
+Java also has the `BiFunction`, which takes two arguments. In this way we can implement `float` division:
+
+```java
+class Main {
+    BiFunction<Float, Float, Float> divide = (x, y) -> x / y;
+}
+```
+
+For functions with more arguments, we can create our own interface. Let us take a three-argument function.
+
+```java
+public interface TriFunction<T, U, V, R> {
+    R apply(T t, U u, V v);
+}
+```
+
+Next, we take a look at currying in Java. It's not as straightforward as in pure functional programming languages:
+
+```java
+class Main {
+    Function<Double, Function<Double, Double>> weight = mass -> gravity -> mass * gravity;
+
+    Function<Double, Double> weightOnEarth = weight.apply(9.81);
+}
+```
+
+We have defined a function to calculate the weight on any given planet, given the gravity constant. We can partially
+apply the function byh passing just the gravity, then later passing the weight. Note that this function is not executed
+until we call `weightOnEarth.apply(80.0)`.
+
+Just like any language we can apply recursion. We take the classical Fibonacci sequence as example.
+
+```java
+class Main {
+    Integer fibonacci(Integer n) {
+        if (n == 1 || n == 2) {
+            return 1;
+        }
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+}
+```
 
 ### N-Queens in a functional manner
 
