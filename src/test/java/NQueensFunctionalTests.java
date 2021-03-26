@@ -72,7 +72,24 @@ public class NQueensFunctionalTests {
         List<NQueensFunctional.Board> solutions = nQueensFunctional.solve(new NQueensFunctional.Board(n), n, 0);
         long stopTime = System.nanoTime();
         Assertions.assertEquals(amountOfSolutions, solutions.size());
-        System.out.println("Time in seconds:" + (double)(stopTime - startTime) / 1000000000);
+        System.out.println("Time in seconds: " + (double)(stopTime - startTime) / 1000000000);
+    }
+
+    @ParameterizedTest
+    @MethodSource("solutionsSet")
+    public void solutionIsAvailable(int n, int amountOfSolutions) {
+        long startTime = System.nanoTime();
+        NQueensFunctional.Board solution = nQueensFunctional.solveOnce(new NQueensFunctional.Board(n), n, 0);
+        long stopTime = System.nanoTime();
+        if(amountOfSolutions == 0) {
+            Assertions.assertNull(solution);
+            System.out.println("Time in seconds: " + (double)(stopTime - startTime) / 1000000000);
+        }
+        else {
+            Assertions.assertNotEquals(solution, null);
+            System.out.println("Time in seconds: " + (double)(stopTime - startTime) / 1000000000);
+            System.out.println(solution.toString());
+        }
     }
 
     private static Stream<Arguments> solutionsSet() {

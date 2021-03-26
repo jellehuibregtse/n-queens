@@ -137,6 +137,15 @@ public class NQueensFunctional {
         System.out.println(solutions.get(0).toString());
     }
 
+
+    Board solveOnce(Board board, int n, int column) {
+        return column >= n ?
+                // The base case: all queens have been placed.
+                board :
+                // For the current column, consider all rows.
+                IntStream.range(0, n).filter(i -> board.isSafe(i, column) && solveOnce(board.copyWithChangedValueOnCoordinate(i, column, 1), n, column + 1) != null).findFirst().stream().mapToObj(i -> solveOnce(board.copyWithChangedValueOnCoordinate(i, column, 1), n, column + 1)).findFirst().orElse(null);
+    }
+
     /**
      * The solve function implementing the algorithm.
      *
